@@ -250,6 +250,4 @@ var Global_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Metadata: "api/localnetv1/services.proto",
-	
-	
 }
