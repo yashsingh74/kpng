@@ -29,3 +29,12 @@ jobs:
     
     - name: run unit tests
       run: ./hack/test_unit.sh
+
+  grpc:
+    name: run grpc verify tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: run grpc verify tests
+        run: |
+          ./hack/generate-grpc.sh
+          ./hack/verify-grpc.sh
