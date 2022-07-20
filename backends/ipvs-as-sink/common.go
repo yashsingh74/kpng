@@ -22,11 +22,11 @@ import (
 	"strings"
 
 	"github.com/google/seesaw/ipvs"
-	"sigs.k8s.io/kpng/client/pkg/diffstore"
+	"sigs.k8s.io/kpng/client/lightdiffstore"
 	"sigs.k8s.io/kpng/client/serviceevents"
 
 	v1 "k8s.io/api/core/v1"
-	"k8s.io/klog"
+	"k8s.io/klog/v2"
 	netutils "k8s.io/utils/net"
 
 	"sigs.k8s.io/kpng/api/localnetv1"
@@ -348,7 +348,7 @@ func (p *proxier) sync() {
 	p.syncIPTableRules()
 
 	// signal diffstores we've finished
-	p.endpoints.Reset(diffstore.ItemUnchanged)
+	p.endpoints.Reset(lightdiffstore.ItemUnchanged)
 }
 
 func (p *proxier) updateRefCountForIPSet(setName string, op Operation) {

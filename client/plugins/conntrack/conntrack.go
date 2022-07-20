@@ -3,28 +3,29 @@ package conntrack
 import (
 	"sync"
 
+	"k8s.io/klog/v2"
 	"sigs.k8s.io/kpng/client"
-	"sigs.k8s.io/kpng/client/diffstore2"
+	"sigs.k8s.io/kpng/client/diffstore"
 	"sigs.k8s.io/kpng/client/localsink/fullstate"
 )
 
-type Leaf = diffstore2.AnyLeaf[Flow]
-type IPPortLeaf = diffstore2.AnyLeaf[IPPort]
+type Leaf = diffstore.AnyLeaf[Flow]
+type IPPortLeaf = diffstore.AnyLeaf[IPPort]
 
 type Conntrack struct {
 	once  sync.Once
-	flows *diffstore2.Store[string, *Leaf]
+	flows *diffstore.Store[string, *Leaf]
 
 	// ipPorts has all the [svc IP, port] *with* endpoints
-	ipPorts *diffstore2.Store[string, *IPPortLeaf]
+	ipPorts *diffstore.Store[string, *IPPortLeaf]
 }
 
 var _ fullstate.Callback = (&Conntrack{}).Callback
 
 func New() Conntrack {
 	return Conntrack{
-		flows:   diffstore2.NewAnyStore[string, Flow](func(a, b Flow) bool { return false }),
-		ipPorts: diffstore2.NewAnyStore[string, IPPort](func(a, b IPPort) bool { return false }),
+		flows:   diffstore.NewAnyStore[string, Flow](func(a, b Flow) bool { return false }),
+		ipPorts: diffstore.NewAnyStore[string, IPPort](func(a, b IPPort) bool { return false }),
 	}
 }
 
@@ -61,6 +62,8 @@ func (ct Conntrack) Callback(ch <-chan *client.ServiceEndpoints) {
 					continue
 				}
 
+				klog.V(1).Info("svc IP ", svcIP)
+
 				ipp := IPPort{
 					Protocol: svcPort.Protocol,
 					DnatIP:   svcIP,
@@ -96,13 +99,19 @@ func (ct Conntrack) Callback(ch <-chan *client.ServiceEndpoints) {
 
 	ct.done()
 
+	klog.V(2).Info("received the new conntrack state")
+
 	for _, item := range ct.ipPorts.Changed() {
 		if item.Created() {
-			cleanupIPPortEntries(item.Value().Get())
+			ipp := item.Value().Get()
+			klog.V(1).Infof("cleaning conntrack entries for new service IP:port %v", ipp)
+			cleanupIPPortEntries(ipp)
 		}
 	}
 
 	for _, item := range ct.flows.Deleted() {
-		cleanupFlowEntries(item.Value().Get())
+		flow := item.Value().Get()
+		klog.V(1).Infof("cleaning conntrack entries for delete flow %v", flow)
+		cleanupFlowEntries(flow)
 	}
 }
