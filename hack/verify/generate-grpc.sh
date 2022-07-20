@@ -29,6 +29,8 @@ function install_grpc {
 function generate_stubs {
 
     protoc -I ./ --go_out=paths=source_relative:. --go-grpc_out=paths=source_relative:. $(find . -name '*.proto')
+    echo "--------+++++++++++++++--------------"
+    echo "End of generate"
 
 }
 
