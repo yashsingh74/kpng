@@ -29,6 +29,5 @@ jobs:
 
     - name: run grpc verify tests
       run: |
-        ./hack/verify/generate-grpc.sh
-        ./hack/verify/verify-grpc.sh
+        ./hack/verify/generate-grpc.sh && ./hack/verify/verify-grpc.sh
 
