@@ -5,7 +5,8 @@ on: [push]
 jobs:
   test:
     name: run grpc verify tests
-    runs-on: rvolosatovs/protoc:latest
+    runs-on: ubuntu-latest
+    container: rvolosatovs/protoc:latest
     steps:
     - name: Setup Go
       uses: actions/setup-go@v2
