@@ -28,10 +28,10 @@ function install_grpc {
 # To generate the gRPC services
 function generate_stubs {
     echo "---Printingggggggggggggg------"
-    ls -al api/localnetv1/verify-protobuf/
+    ls -al api/localnetv1/
     protoc -I ./ --go_out=paths=source_relative:. --go-grpc_out=paths=source_relative:. $(find . -name '*.proto')
     echo "--------+++++++++++++++--------------"
-    ls -al api/localnetv1/verify-protobuf/
+    ls -al api/localnetv1/
     echo "End of generate"
 
 }
