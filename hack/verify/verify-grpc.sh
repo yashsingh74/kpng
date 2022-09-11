@@ -18,6 +18,9 @@
 
 function verify {
     echo "Checking the script"
+    cat api/localnetv1/verify-protobuf/services.pb.go
+    echo "((((((((((((((((((((==================================================================))))))))))))))))))))"
+    cat api/localnetv1/services.pb.go
     diff -q api/localnetv1/verify-protobuf/services.pb.go api/localnetv1/services.pb.go && diff -q api/localnetv1/verify-protobuf/services_grpc.pb.go api/localnetv1/services_grpc.pb.go || { echo "File doesn't match"; exit 1; }
 }
 
